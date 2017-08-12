@@ -15,7 +15,7 @@ namespace CM3D2.danceBg
     PluginFilter("CM3D2x86"),
     PluginFilter("CM3D2VRx64"),
     PluginName("danceBg"),
-    PluginVersion("0.0.0.1")]
+    PluginVersion("0.0.0.1a")]
     public class danceBg : PluginBase
     {
 
@@ -28,7 +28,6 @@ namespace CM3D2.danceBg
         
 
         private DanceMain danceMain = null;
-        private FieldInfo field;
         private FieldInfo fieldMaid = (typeof(Maid)).GetField("m_Param", BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
         
         private void SetPreset(Maid maid, string fileName)
@@ -49,12 +48,14 @@ namespace CM3D2.danceBg
             maidSetting = false;
             cameraTransform = null;
             lightList = null;
+            if(danceMain == null) return;
+            Debug.Log("DanceBg.Plugin:[Maid name] " + xmlManager.BackGroundPreset);
         }
 
 
         private void Update()
         {
-            if(Input.GetKey(KeyCode.Escape)){
+            if(Input.GetKeyDown(KeyCode.Escape)){
                 xmlManager = new XmlManager();
             }
         }
@@ -76,7 +77,17 @@ namespace CM3D2.danceBg
                     }
                     else{
                         string[] nameList = xmlManager.BackGroundPreset.Split(' ');
+                        if(nameList.Length != 2){
+                            Debug.LogError("DanceBg.Plugin:[Maid name Invalid] " +  nameList.Length + "#" + xmlManager.BackGroundPreset);
+                            maidSetting = true;
+                            return;
+                        }
                         maid = searchStockMaid(nameList[0], nameList[1]);
+                        if(maid == null){
+                            Debug.LogError("DanceBg.Plugin:[Maid not found] #" + nameList[0] + "#"  + nameList[1]);
+                            maidSetting = true;
+                            return;
+                        }
                     }
                 }
                 if(maid != null) {
@@ -105,7 +116,7 @@ namespace CM3D2.danceBg
                     cameraTransform = GameMain.Instance.MainCamera.transform;
                     // 背景用メイド設定
                     GameMain.Instance.CharacterMgr.SetActiveMaid(maid,maidIndex);
-                    maid.SetPos(xmlManager.BackGroundPos);
+                    maid.SetPos(xmlManager.BackGroundPos + xmlManager.BackGroundPos2);
                     maid.Visible = true;
                 }
                 maidSetting = true;
@@ -150,6 +161,8 @@ namespace CM3D2.danceBg
             private XmlDocument xmldoc = new XmlDocument();
             public string    BackGroundPreset = null;
             public Vector3   BackGroundPos = new Vector3(0.0f,10.0f,0.0f);
+            public Vector3   BackGroundPos2 = new Vector3(0.0f,0.0f,0.0f);
+//            public Vector3   BackGroundPos2 = new Vector3(0.0f,0.22f,-4.5f);
             
             public XmlManager()
             {
