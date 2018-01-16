@@ -25,7 +25,7 @@ namespace CM3D2.danceBg
         private Transform cameraTransform;
         private Light[] lightList= null;
         private Vector3[] lightVectorList = null;
-        
+        private Vector3 localscale = new Vector3(0.5f,0.5f,0.5f);
 
         private DanceMain danceMain = null;
         private FieldInfo fieldMaid = (typeof(Maid)).GetField("m_Param", BindingFlags.Instance | BindingFlags.Static | BindingFlags.Public | BindingFlags.NonPublic);
@@ -58,10 +58,16 @@ namespace CM3D2.danceBg
             if(Input.GetKeyDown(KeyCode.Escape)){
                 xmlManager = new XmlManager();
             }
+//            if(danceMain == null) return;
+//            Debug.LogError("DanceBg.Plugin:[farClipPlane] #" + GameMain.Instance.MainCamera.camera.farClipPlane);
+//            GameMain.Instance.MainCamera.camera.farClipPlane=100;
         }
         
         private void LateUpdate(){
             if(danceMain == null) return;
+
+            // カメラの表示を適当に広げる よくわからんので毎フレームやっとく
+            GameMain.Instance.MainCamera.camera.farClipPlane=100;
 
             if(maidSetting == false){
                 if(xmlManager.BackGroundPreset != null){
@@ -93,10 +99,17 @@ namespace CM3D2.danceBg
                 if(maid != null) {
                     //表示済みのめいどさんの位置変更
                     int maidIndex;
+//                    for(maidIndex = 1; maidIndex < GameMain.Instance.CharacterMgr.GetMaidCount(); maidIndex++){
                     for(maidIndex = 0; maidIndex < GameMain.Instance.CharacterMgr.GetMaidCount(); maidIndex++){
                          Maid maidx = GameMain.Instance.CharacterMgr.GetMaid(maidIndex);
                          if(maidx == null) break;
+//                         if(maidIndex == 0){
+//                         maidx.SetRot(maid.GetRot() + new Vector3(0.0f,180.0f,0.0f));
+//                         }
+//                         else{
                          maidx.SetPos(maidx.gameObject.transform.localPosition + xmlManager.BackGroundPos);
+//                         maidx.gameObject.transform.localScale = localscale;
+//                         }
                     }
                     // 照明移動は時々？動く ここで初期位置設定
                     // ダンスによってはMainLight以外にもLightがあるのでLightを移動
@@ -111,20 +124,55 @@ namespace CM3D2.danceBg
                                                           lightList[i].gameObject.transform.position.y,
                                                           lightList[i].gameObject.transform.position.z);
                     //  Debug.LogError("Dance_khg.Plugin:light.transform.position" + lightList[i].gameObject.transform.position.ToString());
+                    //  Debug.LogError("Dance_khg.Plugin:light.transform.eulerAngles" + lightList[i].gameObject.transform.eulerAngles.ToString());
+                    //  Debug.LogError("Dance_khg.Plugin:light.range" + lightList[i].type + " " + lightList[i].range);
+                    //  if(lightList[i].type == LightType.Point) lightList[i].range += 30.0f;
+                    //  lightList[i].range = lightList[i].range * 2.0f;
                     }
                     // カメラはほぼ毎フレーム移動 トランスフォームの取得しておく
                     cameraTransform = GameMain.Instance.MainCamera.transform;
                     // 背景用メイド設定
                     GameMain.Instance.CharacterMgr.SetActiveMaid(maid,maidIndex);
                     maid.SetPos(xmlManager.BackGroundPos + xmlManager.BackGroundPos2);
+//                    maid.gameObject.transform.localScale = localscale;
                     maid.Visible = true;
+                    
+                    // 固定ライト追加
+                    GameObject goSubLight;
+//                    goSubLight = new GameObject("sub light");
+//                    goSubLight.AddComponent<Light>();
+//                    goSubLight.transform.SetParent(goSubCam.transform);
+//                    goSubLight.transform.position =
+//                                            new Vector3(0.0f,
+//                                                        1.0f,
+//                                                        0.0f) + xmlManager.BackGroundPos;
+//                    goSubLight.transform.eulerAngles =
+//                                            new Vector3(90.0f,  全然わからん
+//                                                        0.0f,
+//                                                        0.0f);
+
+//                    goSubLight.GetComponent<Light>().type = LightType.Spot;
+//                    goSubLight.GetComponent<Light>().type = LightType.Directional;
+//                    goSubLight.GetComponent<Light>().range = 10;
+//                    goSubLight.GetComponent<Light>().enabled = true;
+//                    goSubLight.GetComponent<Light>().intensity = 1.2f;
+//                  goSubLight.GetComponent<Light>().spotAngle = ssParam.fValue[PKeySubLight][PPropSubLightRange];
                 }
+                
+//                GameObject[] gObjList = (GameObject[])FindObjectsOfType(typeof(GameObject));
+//                foreach (GameObject gObj in gObjList){
+//                    Debug.LogError("DanceBg.Plugin:" + gObj.tag);
+//                }
+                
                 maidSetting = true;
             }
             if(cameraTransform != null){
                 cameraTransform.position = new Vector3(cameraTransform.position.x,
                                                        cameraTransform.position.y,
                                                        cameraTransform.position.z) + xmlManager.BackGroundPos;
+//                cameraTransform.position = new Vector3(cameraTransform.position.x * localscale.x,
+//                                                       cameraTransform.position.y * localscale.y,
+//                                                       cameraTransform.position.z * localscale.z) + xmlManager.BackGroundPos;
             }
             if(lightList != null){
                 for (int i = 0; i < lightList.Length; i++){
@@ -137,8 +185,16 @@ namespace CM3D2.danceBg
                                                          lightList[i].gameObject.transform.position.y,
                                                          lightList[i].gameObject.transform.position.z);
                     //    Debug.LogError("Dance_khg.Plugin:light.transform.position" + lightList[i].gameObject.transform.position.ToString());
+                    //  Debug.LogError("Dance_khg.Plugin:light.range" + lightList[i].type + " " + lightList[i].range);
+                    //  Debug.LogError("Dance_khg.Plugin:light.transform.eulerAngles" + lightList[i].gameObject.transform.eulerAngles.ToString());
                     }
                 }
+            }
+            
+            if(Input.GetKeyDown(KeyCode.Space)){
+                xmlManager = new XmlManager();
+                Maid maidx = GameMain.Instance.CharacterMgr.GetMaid(0);
+                maidx.SetPos(maidx.gameObject.transform.localPosition + xmlManager.BackGroundPos);
             }
         }
         
@@ -161,8 +217,11 @@ namespace CM3D2.danceBg
             private XmlDocument xmldoc = new XmlDocument();
             public string    BackGroundPreset = null;
             public Vector3   BackGroundPos = new Vector3(0.0f,10.0f,0.0f);
-            public Vector3   BackGroundPos2 = new Vector3(0.0f,0.0f,0.0f);
+//            public Vector3   BackGroundPos2 = new Vector3(0.0f,0.0f,0.0f);
+//            public Vector3   BackGroundPos2 = new Vector3(0.0f,-0.1f,-0.8f);
+//            public Vector3   BackGroundPos2 = new Vector3(0.0f,0.0f,5.5f);
 //            public Vector3   BackGroundPos2 = new Vector3(0.0f,0.22f,-4.5f);
+            public Vector3 BackGroundPos2;
             
             public XmlManager()
             {
@@ -180,6 +239,9 @@ namespace CM3D2.danceBg
                 // PresetList
                 XmlNodeList presetList = xmldoc.GetElementsByTagName("BackGround");
                 BackGroundPreset =((XmlElement)presetList[0]).GetAttribute("FileName");
+                BackGroundPos2 = new Vector3(float.Parse(((XmlElement)presetList[0]).GetAttribute("X"))
+                                            ,float.Parse(((XmlElement)presetList[0]).GetAttribute("Y"))
+                                            ,float.Parse(((XmlElement)presetList[0]).GetAttribute("Z")));
             }
         }
 
