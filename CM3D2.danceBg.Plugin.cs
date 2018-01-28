@@ -15,7 +15,7 @@ namespace CM3D2.danceBg
     PluginFilter("CM3D2x86"),
     PluginFilter("CM3D2VRx64"),
     PluginName("danceBg"),
-    PluginVersion("0.0.0.1a")]
+    PluginVersion("0.0.0.2")]
     public class danceBg : PluginBase
     {
 
@@ -67,7 +67,7 @@ namespace CM3D2.danceBg
             if(danceMain == null) return;
 
             // カメラの表示を適当に広げる よくわからんので毎フレームやっとく
-            GameMain.Instance.MainCamera.camera.farClipPlane=100;
+            GameMain.Instance.MainCamera.camera.farClipPlane = xmlManager.farClipPlane;
 
             if(maidSetting == false){
                 if(xmlManager.BackGroundPreset != null){
@@ -134,11 +134,12 @@ namespace CM3D2.danceBg
                     // 背景用メイド設定
                     GameMain.Instance.CharacterMgr.SetActiveMaid(maid,maidIndex);
                     maid.SetPos(xmlManager.BackGroundPos + xmlManager.BackGroundPos2);
+                    maid.SetRot(xmlManager.BackGroundrotate);
 //                    maid.gameObject.transform.localScale = localscale;
                     maid.Visible = true;
                     
                     // 固定ライト追加
-                    GameObject goSubLight;
+//                    GameObject goSubLight;
 //                    goSubLight = new GameObject("sub light");
 //                    goSubLight.AddComponent<Light>();
 //                    goSubLight.transform.SetParent(goSubCam.transform);
@@ -191,11 +192,11 @@ namespace CM3D2.danceBg
                 }
             }
             
-            if(Input.GetKeyDown(KeyCode.Space)){
-                xmlManager = new XmlManager();
-                Maid maidx = GameMain.Instance.CharacterMgr.GetMaid(0);
-                maidx.SetPos(maidx.gameObject.transform.localPosition + xmlManager.BackGroundPos);
-            }
+//            if(Input.GetKeyDown(KeyCode.Space)){
+//                xmlManager = new XmlManager();
+//                Maid maidx = GameMain.Instance.CharacterMgr.GetMaid(0);
+//                maidx.SetPos(maidx.gameObject.transform.localPosition + xmlManager.BackGroundPos);
+//            }
         }
         
         private Maid searchStockMaid(string lastName, string firstName){
@@ -221,7 +222,9 @@ namespace CM3D2.danceBg
 //            public Vector3   BackGroundPos2 = new Vector3(0.0f,-0.1f,-0.8f);
 //            public Vector3   BackGroundPos2 = new Vector3(0.0f,0.0f,5.5f);
 //            public Vector3   BackGroundPos2 = new Vector3(0.0f,0.22f,-4.5f);
-            public Vector3 BackGroundPos2;
+            public Vector3 BackGroundPos2 = new Vector3(0.0f,0.0f,0.0f);
+            public Vector3 BackGroundrotate = new Vector3(0.0f,0.0f,0.0f);
+            public float farClipPlane = 100;
             
             public XmlManager()
             {
@@ -239,9 +242,28 @@ namespace CM3D2.danceBg
                 // PresetList
                 XmlNodeList presetList = xmldoc.GetElementsByTagName("BackGround");
                 BackGroundPreset =((XmlElement)presetList[0]).GetAttribute("FileName");
-                BackGroundPos2 = new Vector3(float.Parse(((XmlElement)presetList[0]).GetAttribute("X"))
-                                            ,float.Parse(((XmlElement)presetList[0]).GetAttribute("Y"))
-                                            ,float.Parse(((XmlElement)presetList[0]).GetAttribute("Z")));
+                try{
+                    BackGroundPos2 = new Vector3(float.Parse(((XmlElement)presetList[0]).GetAttribute("X"))
+                                                ,float.Parse(((XmlElement)presetList[0]).GetAttribute("Y"))
+                                                ,float.Parse(((XmlElement)presetList[0]).GetAttribute("Z")));
+                }
+                catch(Exception e){
+                    // 握りつぶす
+                }
+                try{
+                    BackGroundrotate = new Vector3(float.Parse(((XmlElement)presetList[0]).GetAttribute("rotateX"))
+                                                  ,float.Parse(((XmlElement)presetList[0]).GetAttribute("rotateY"))
+                                                  ,float.Parse(((XmlElement)presetList[0]).GetAttribute("rotateZ")));
+                }
+                catch(Exception e){
+                    // 握りつぶす
+                }
+
+                XmlNodeList cameraList = xmldoc.GetElementsByTagName("Camera");
+                if(cameraList != null){
+                    farClipPlane = float.Parse(((XmlElement)cameraList[0]).GetAttribute("farClipPlane"));
+                }
+
             }
         }
 

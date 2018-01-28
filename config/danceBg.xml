@@ -1,3 +1,14 @@
 <DanceBg>
-    <BackGround FileName="背景 弥生" />
+    <BackGround FileName="背景 弥生" X="0.0" Y="0.0" Z="0.0" /> 
+    <!-- BackGround FileName="背景 弥生" X="17.0" Y="-6.006" Z="-7.6" rotateX="0.0" rotateY="90.0" rotateZ="0.0" /--> <!-- 唐揚げ回転２階横 /-->
+    <!-- BackGround FileName="背景 弥生" X="2.0" Y="-0.05" Z="7.5" rotateX="0.0" rotateY="90.0" rotateZ="0.0" /--> <!-- 唐揚げ回転桟橋っぽいとこ /-->
+    <!-- BackGround FileName="背景 弥生" X="0.0" Y="0.15" Z="-2.0" /-->  <!-- 夏駅 /-->
+    <!-- BackGround FileName="背景 弥生" X="0.0" Y="0.05" Z="-3.0" /-->  <!-- DVステージ /-->
+    <!-- BackGround FileName="背景 弥生" X="6.0" Y="-0.75" Z="6.5" /--> <!-- 唐揚げ小屋１階 /-->
+    <!-- BackGround FileName="背景 弥生" X="0.0" Y="-0.2" Z="0.0" /--> <!-- 鍋田定位置 /-->
+    <!-- BackGround FileName="背景 弥生" X="0.0" Y="-0.1" Z="-18.0" /--> <!-- 鍋田噴水 /-->
+    <!-- BackGround FileName="背景 弥生" X="0.0" Y="-3.15" Z="19.0" /-->  <!-- 鍋田背景 /-->
+    <!-- コメント中敬称略 /-->
+    
+    <Camera farClipPlane="100.0" />
 </DanceBg>
